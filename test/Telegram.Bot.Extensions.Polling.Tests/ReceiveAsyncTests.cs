@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -11,7 +11,7 @@ namespace Telegram.Bot.Extensions.Polling.Tests
         [Fact]
         public async Task ReceivesUpdatesAndRespectsTheCancellationToken()
         {
-            var bot = new MockTelegramBotClient("start-end", "foo");
+            MockTelegramBotClient bot = new ("start-end", "foo");
 
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
@@ -25,12 +25,12 @@ namespace Telegram.Bot.Extensions.Polling.Tests
                     cancellationTokenSource.Cancel();
             }
 
-            var updateHandler = new DefaultUpdateHandler(
+            DefaultUpdateHandler updateHandler = new (
                 HandleUpdate,
                 errorHandler: async (client, e, token) => await Task.Delay(10, token)
             );
 
-            var cancellationToken = cancellationTokenSource.Token;
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
             await bot.ReceiveAsync(updateHandler, cancellationToken);
 
             Assert.True(cancellationToken.IsCancellationRequested);
@@ -41,7 +41,7 @@ namespace Telegram.Bot.Extensions.Polling.Tests
         [Fact]
         public async Task UserExceptionsPropagateToSurface()
         {
-            var bot = new MockTelegramBotClient("foo-bar", "throw");
+            MockTelegramBotClient bot = new ("foo-bar", "throw");
 
             int updateCount = 0;
             async Task HandleUpdate(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -52,7 +52,7 @@ namespace Telegram.Bot.Extensions.Polling.Tests
                     throw new InvalidOperationException("Oops");
             }
 
-            var updateHandler = new DefaultUpdateHandler(
+            DefaultUpdateHandler updateHandler = new (
                 HandleUpdate,
                 errorHandler: async (client, e, token) => await Task.Delay(10, token)
             );
