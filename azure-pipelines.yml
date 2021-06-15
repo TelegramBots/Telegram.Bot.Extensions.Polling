@@ -1,15 +1,15 @@
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'Ubuntu-20.04'
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install Core 3.0 SDK'
+  displayName: 'Install Core 5.0 SDK'
   inputs:
     packageType: 'sdk'
-    version: '3.0.100'
+    version: '5.x'
 
 - script: dotnet build -c Release
   displayName: 'dotnet build Release'
 
-- script: dotnet test -c Debug
-  displayName: 'dotnet test Debug'
+- script: dotnet test -c Release
+  displayName: 'dotnet test Release'
