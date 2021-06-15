@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using Telegram.Bot.Types;
 using Xunit;
 
 namespace Telegram.Bot.Extensions.Polling.Tests.YieldingUpdateReceivers
@@ -8,12 +9,12 @@ namespace Telegram.Bot.Extensions.Polling.Tests.YieldingUpdateReceivers
         [Fact]
         public async Task BlocksWhileProcessingAsync()
         {
-            var mockClient = new MockTelegramBotClient("test", "break", "test");
-            var receiver = new BlockingUpdateReceiver(mockClient);
+            MockTelegramBotClient mockClient = new ("test", "break", "test");
+            BlockingUpdateReceiver receiver = new (mockClient);
 
             Assert.Equal(3, mockClient.MessageGroupsLeft);
 
-            await foreach (var update in receiver.YieldUpdatesAsync())
+            await foreach (Update update in receiver.YieldUpdatesAsync())
             {
                 if (update.Message.Text == "break")
                     break;
@@ -25,13 +26,13 @@ namespace Telegram.Bot.Extensions.Polling.Tests.YieldingUpdateReceivers
         [Fact]
         public async Task ReturnsReceivedPendingUpdates()
         {
-            var mockClient = new MockTelegramBotClient("foo-bar", "123");
-            var receiver = new BlockingUpdateReceiver(mockClient);
+            MockTelegramBotClient mockClient = new ("foo-bar", "123");
+            BlockingUpdateReceiver receiver = new (mockClient);
 
             Assert.Equal(2, mockClient.MessageGroupsLeft);
             Assert.Equal(0, receiver.PendingUpdates);
 
-            await foreach (var update in receiver.YieldUpdatesAsync())
+            await foreach (Update update in receiver.YieldUpdatesAsync())
             {
                 Assert.Equal("foo", update.Message.Text);
                 break;
@@ -40,7 +41,7 @@ namespace Telegram.Bot.Extensions.Polling.Tests.YieldingUpdateReceivers
             Assert.Equal(1, mockClient.MessageGroupsLeft);
             Assert.Equal(1, receiver.PendingUpdates);
 
-            await foreach (var update in receiver.YieldUpdatesAsync())
+            await foreach (Update update in receiver.YieldUpdatesAsync())
             {
                 Assert.Equal("bar", update.Message.Text);
                 break;
@@ -49,7 +50,7 @@ namespace Telegram.Bot.Extensions.Polling.Tests.YieldingUpdateReceivers
             Assert.Equal(1, mockClient.MessageGroupsLeft);
             Assert.Equal(0, receiver.PendingUpdates);
 
-            await foreach (var update in receiver.YieldUpdatesAsync())
+            await foreach (Update update in receiver.YieldUpdatesAsync())
             {
                 Assert.Equal("123", update.Message.Text);
                 break;
